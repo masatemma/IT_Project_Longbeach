@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
  
 const Record = (props) => (
  <tr>
-   <td>{props.record.name}</td>
-   <td>{props.record.position}</td>
-   <td>{props.record.level}</td>
+   <td>{props.record.first_name}</td>
+   <td>{props.record.last_name}</td>
+   <td>{props.record.email_address}</td>
    <td>
      <Link className="btn btn-link" to={`/edit/${props.record._id}`}>Edit</Link> |
      <button className="btn btn-link"
@@ -51,16 +51,6 @@ export default function RecordList() {
     const newRecords = records.filter((el) => el._id !== id);
     setRecords(newRecords);
   }
- 
- // This method will delete a record
- async function deleteRecord(id) {
-   await fetch(`http://localhost:5050/record/${id}`, {
-     method: "DELETE"
-   });
- 
-   const newRecords = records.filter((el) => el._id !== id);
-   setRecords(newRecords);
- }
  
  // This method will map out the records on the table
  function recordList() {
