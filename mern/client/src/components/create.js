@@ -44,7 +44,7 @@ export default function Create() {
      <h3>Create New Record</h3>
      <form onSubmit={onSubmit}>
        <div className="form-group">
-         <label htmlFor="first_name">Name</label>
+         <label htmlFor="first_name">First Name</label>
          <input
            type="text"
            className="form-control"
@@ -54,7 +54,7 @@ export default function Create() {
          />
        </div>
        <div className="form-group">
-         <label htmlFor="last_name">Position</label>
+         <label htmlFor="last_name">Last Name</label>
          <input
            type="text"
            className="form-control"
