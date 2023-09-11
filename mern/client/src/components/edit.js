@@ -84,7 +84,7 @@ export default function Edit() {
          />
        </div>
        <div className="form-group">
-         <label htmlFor="last_name">Position: </label>
+         <label htmlFor="last_name">Last Name: </label>
          <input
            type="text"
            className="form-control"
