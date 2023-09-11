@@ -73,7 +73,7 @@ export default function RecordList() {
        <thead>
          <tr>
            <th>First Name</th>
-           <th>Last</th>
+           <th>Last Name</th>
            <th>Email</th>           
          </tr>
        </thead>
