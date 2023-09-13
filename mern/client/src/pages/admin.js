@@ -27,97 +27,78 @@ const SessionRecord = (props) => (
     <tr>
         <td>
             <Link 
-                sessionName="btn btn-link" to={`/classes/sessions/${props.record._id}`}
+                className="btn btn-link" to={`/classes/sessions/${props.record._id}`}
             >
                 {props.record.session_name}
-            </Link>
+            </Link> 
         </td>
     </tr>
 );
 
-
-
-
 export default function Admin() {
-    const [records, setRecords, sessionBool] = useState([]);
+    const [records, setRecords] = useState([]);
+    const [isSession, setIsSession] = useState(false);  // This will help us know if we're looking at sessions or classes
 
     useEffect(() => {
         document.title = 'Admin Page';
-        const sessionBool = false;
-        console.log("HERE");
     }, []); // The empty dependency array means this effect runs once after component mounting
     
     useEffect(() => {
-        
         getClassRecords();
-
-  
-        return;
-
-    }, [records.length]);
-
-    // This method will map out the records on the table
-    function recordList() {
-        return records.map((record) => {
-            return (
-                <ClassRecord
-                record={record}
-                sessionList={sessionList}
-                key={record._id}
-                />
-            );
-        });
-    }
+    }, []);
 
     async function getClassRecords() {
         const response = await fetch(`http://localhost:5050/record/classes`);
     
         if (!response.ok) {
-            const message = `An error occurred: ${response.statusText}`;
+            const message = `An error occurred for class: ${response.statusText}`;
             window.alert(message);
             return;
         }
-      
-        const records = await response.json();
-        setRecords(records);
+        const data = await response.json();
+        setRecords(data);
+        setIsSession(false);  // We set this to false to indicate that we're looking at classes
     }
 
-    async function sessionList(class_id) {
-        console.log("HERE");
-        const req = {
-            class_id: class_id 
-        };
-    
-        const response = await fetch(`http://localhost:5050/record/classes`, {
-            method: "POST", // Use the appropriate HTTP method (e.g., POST)
-            headers: {
-                "Content-Type": "application/json", // Set the content type based on your data
-            },
-            body: JSON.stringify(req), // Convert data to JSON format if needed
-        });
-
+    async function getSessionRecords(class_id) {
+        // This is where you'd make your API call to get sessions by class ID.
+        const response = await fetch(`http://localhost:5050/record/classes/${class_id}/sessions`);
         if (!response.ok) {
-            const message = `An error occurred: ${response.statusText}`;
+            const message = `An error occurred for session: ${response.statusText}`;
             window.alert(message);
             return;
         }
-      
-        const records = await response.json();
-        setRecords(records);
+        const data = await response.json();
+        setRecords(data);
+        setIsSession(true);  // We set this to true to indicate that we're looking at sessions
+    }
+
+    // This method will map out the records on the table
+    function recordList() {
+        if (isSession) {
+          return records.map((record) => (
+            <SessionRecord key={record._id} record={record} />
+          ));
+        } 
+        else {
+          return records.map((record) => (
+            <ClassRecord key={record._id} record={record} sessionList={getSessionRecords} />
+          ));
+        }
     }
 
     // This following section will display the table with the records of individuals.
     return (
         <div>
-        <h3>Record List</h3>
-        <table className="table table-striped" style={{ marginTop: 20 }}>
+          <h3>Record List</h3>
+          <table className='table table-striped' style={{ marginTop: 20 }}>
             <thead>
-            <tr>
-                <th>Class</th>          
-            </tr>
+              <tr>
+                <th>{isSession ? 'Session' : 'Class'}</th>
+              </tr>
             </thead>
             <tbody>{recordList()}</tbody>
-        </table>
+          </table>
         </div>
     );
 }
