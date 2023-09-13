@@ -21,11 +21,11 @@ const Record = (props) => (
  
 export default function RecordList() {
  const [records, setRecords] = useState([]);
- 
+
  // This method fetches the records from the database.
  useEffect(() => {
     async function getRecords() {
-      const response = await fetch(`http://localhost:5050/record/`);
+      const response = await fetch(`http://localhost:5050/record/attendee/`);
   
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`;
@@ -44,7 +44,7 @@ export default function RecordList() {
   
   // This method will delete a record
   async function deleteRecord(id) {
-    await fetch(`http://localhost:5050/record/${id}`, {
+    await fetch(`http://localhost:5050/record/attendee/${id}`, {
       method: "DELETE"
     });
   
