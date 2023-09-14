@@ -6,6 +6,15 @@ const Record = (props) => (
     <td>{props.record.first_name}</td>
     <td>{props.record.last_name}</td>
     <td>{props.record.attended ? "Yes" : "No"}</td>
+    <td>
+      <button 
+        className="btn btn-primary" 
+        disabled={props.record.attended}
+        onClick={() => props.handleCheckIn(props.record._id)}
+      >
+        Check-In
+      </button>
+    </td>
   </tr>
 );
 
@@ -28,13 +37,36 @@ export default function CheckIn() {
     }
   
     getRecords();
+
   }, []);
+  
+  async function handleCheckIn(id) {
+    const response = await fetch(`http://localhost:5050/record/checkin/${id}`, {
+      method: "PATCH"
+    });
+
+    if (response.ok) {
+      alert("Check-in successful");
+      const updatedRecords = records.map(record => {
+        if (record._id === id) {
+          record.attended = true;
+        }
+        return record;
+      });
+      setRecords(updatedRecords);
+    } else {
+      const message = await response.text();
+      alert(`Check-in failed: ${message}`);
+    }
+  }
+
   
   function checkin() {
     return records.map((record) => {
       return (
         <Record
           record={record}
+          handleCheckIn={handleCheckIn}
           key={record._id}
         />
       );
@@ -43,7 +75,7 @@ export default function CheckIn() {
   
   return (
     <div>
-      <h3>Check-in List</h3>
+      <h3>Attendance System</h3>
       <table className="table table-striped" style={{ marginTop: 20 }}>
         <thead>
           <tr>

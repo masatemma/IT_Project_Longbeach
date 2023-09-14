@@ -8,7 +8,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   let collection = await db.collection("Attendee");
   let results = await collection.find({}).toArray();
-  res.send(results).status(200);
+  res.status(200).send(results);
 });
 
 // This section will help you get a single record by id
@@ -61,9 +61,9 @@ router.delete("/:id", async (req, res) => {
 });
 
 // This section will help you get a list of all the check-ins with attendee details.
-router.get("/", async (req, res) => {
+router.get("/checkin", async (req, res) => {
   try {
-    let collection = await db.collection("Check-in");
+    let collection = await db.collection("Check_in");
     let results = await collection.aggregate([
       {
         $lookup: {
@@ -88,6 +88,27 @@ router.get("/", async (req, res) => {
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
+});
+
+// This section will help you check-in a person by id.
+router.patch("/checkin/:id", async (req, res) => {
+  console.log("Check-in request received for id:", req.params.id);  // Debug log
+
+  const query = { attendee_id: new ObjectId(req.params.id) };
+  const attendee = await db.collection("Check_in").findOne(query);
+
+  if (!attendee) {
+    console.log("No attendee found for id:", req.params.id);  // Debug log
+    return res.status(404).send("Attendee not found");
+  }
+
+  if (attendee.attended) {
+    return res.status(400).send("Already checked in");
+  }
+
+  const updates = { $set: { attended: true } };
+  await db.collection("Check-in").updateOne(query, updates);
+  res.status(200).send("Check-in successful");
 });
 
 export default router;
