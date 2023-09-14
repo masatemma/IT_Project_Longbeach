@@ -13,6 +13,8 @@ const RedirectToAdmin = () => {
   return null;
 };
 
+/* No need to use the other components. Redirect immediately to /admin.
+ */
 const App = () => {
   return (
     <div>

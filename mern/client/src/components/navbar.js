@@ -1,26 +1,24 @@
 import React from "react";
 import { useLocation, NavLink, useNavigate } from "react-router-dom";
-
-// Import bootstrap for styling
 import "bootstrap/dist/css/bootstrap.css";
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-
+  // The current design (just /admin for website) makes this go back to the first page
   const goBack = () => {
     navigate(-1);
   };
 
   return (
+    /* Can't comment inside so:
+      Can put longbeach logo above
+      The back button only shows when the link includes /admin
+     */
     <div>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <NavLink className="navbar-brand" to="/">
-          <img
-            style={{ "width": "25%" }}
-            src="https://d3cy9zhslanhfa.cloudfront.net/media/3800C044-6298-4575-A05D5C6B7623EE37/4B45D0EC-3482-4759-82DA37D8EA07D229/webimage-8A27671A-8A53-45DC-89D7BF8537F15A0D.png"
-            alt="Logo"
-          />
+          {/* Your logo here */}
         </NavLink>
 
         <button
@@ -37,9 +35,13 @@ export default function Navbar() {
 
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav ml-auto">
-            {location.pathname.includes("sessions") && (
+            {location.pathname.includes("admin") && (
               <li className="nav-item">
-                <button className="btn btn-link nav-link" onClick={goBack}>
+                <button 
+                  className="btn btn-link nav-link" 
+                  style={{ fontSize: '24px' }}
+                  onClick={goBack}
+                >
                   Back
                 </button>
               </li>

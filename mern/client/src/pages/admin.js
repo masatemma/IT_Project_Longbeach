@@ -41,7 +41,7 @@ export default function Admin() {
 
     useEffect(() => {
         document.title = 'Admin Page';
-    }, []); // The empty dependency array means this effect runs once after component mounting
+    }, []);
     
     useEffect(() => {
         getClassRecords();
@@ -56,7 +56,7 @@ export default function Admin() {
             return;
         }
         const data = await response.json();
-        setRecords(data);
+        setRecords(data);     // Set records to classes data
         setIsSession(false);  // We set this to false to indicate that we're looking at classes
     }
 
@@ -69,7 +69,7 @@ export default function Admin() {
             return;
         }
         const data = await response.json();
-        setRecords(data);
+        setRecords(data);    // Set records to sessions data
         setIsSession(true);  // We set this to true to indicate that we're looking at sessions
     }
 
