@@ -107,7 +107,7 @@ router.patch("/checkin/:id", async (req, res) => {
   }
 
   const updates = { $set: { attended: true } };
-  await db.collection("Check-in").updateOne(query, updates);
+  await db.collection("Check_in").updateOne(query, updates); // Update the "Check_in" collection
   res.status(200).send("Check-in successful");
 });
 
