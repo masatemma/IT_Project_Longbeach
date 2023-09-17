@@ -29,10 +29,10 @@ router.get("/classes/", async (req, res) => {
 
 router.post("/classes/", async (req, res) => {
   let collection = await db.collection("Session");
-  let query = {_id: new ObjectId(req.params.class_id)};
+  let query = {class_id: new ObjectId(req.class_id)};
   let result = await collection.findOne(query);
-
-  if (!result) res.send("Not found").status(404);
+  
+  if (!result) res.send({error: "Not found"}).status(404);
   else res.send(result).status(200);
 });
 

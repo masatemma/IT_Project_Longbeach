@@ -27,7 +27,7 @@ const SessionRecord = (props) => (
     <tr>
         <td>
             <Link 
-                sessionName="btn btn-link" to={`/classes/sessions/${props.record._id}`}
+                className="btn btn-link" to={`/classes/sessions/${props.record._id}`}
             >
                 {props.record.session_name}
             </Link>
@@ -35,11 +35,9 @@ const SessionRecord = (props) => (
     </tr>
 );
 
-
-
-
 export default function Admin() {
-    const [records, setRecords, sessionBool] = useState([]);
+    const [records, setRecords] = useState([]);
+    const [sessionBool] = useState(false);
 
     useEffect(() => {
         document.title = 'Admin Page';
@@ -48,16 +46,24 @@ export default function Admin() {
     }, []); // The empty dependency array means this effect runs once after component mounting
     
     useEffect(() => {
-        
         getClassRecords();
-
-  
         return;
 
     }, [records.length]);
 
     // This method will map out the records on the table
     function recordList() {
+        if (sessionBool)
+            return records.map((record) => {
+                return (
+                    <SessionRecord
+                    record={record}
+                    key={record._id}
+                    />
+                );
+            });
+
+
         return records.map((record) => {
             return (
                 <ClassRecord
@@ -70,7 +76,7 @@ export default function Admin() {
     }
 
     async function getClassRecords() {
-        const response = await fetch(`http://localhost:5050/record/classes`);
+        const response = await fetch(`http://localhost:5050/record/classes/`);
     
         if (!response.ok) {
             const message = `An error occurred: ${response.statusText}`;
@@ -83,25 +89,26 @@ export default function Admin() {
     }
 
     async function sessionList(class_id) {
-        console.log("HERE");
+        const sessionBool = true;
         const req = {
             class_id: class_id 
         };
-    
-        const response = await fetch(`http://localhost:5050/record/classes`, {
+        console.log(class_id);
+
+        const response = await fetch(`http://localhost:5050/record/classes/`, {
             method: "POST", // Use the appropriate HTTP method (e.g., POST)
             headers: {
                 "Content-Type": "application/json", // Set the content type based on your data
             },
             body: JSON.stringify(req), // Convert data to JSON format if needed
         });
-
+        
         if (!response.ok) {
             const message = `An error occurred: ${response.statusText}`;
             window.alert(message);
             return;
         }
-      
+        
         const records = await response.json();
         setRecords(records);
     }
@@ -113,7 +120,7 @@ export default function Admin() {
         <table className="table table-striped" style={{ marginTop: 20 }}>
             <thead>
             <tr>
-                <th>Class</th>          
+                <th>{sessionBool ? 'Session' : 'Class'}</th>          
             </tr>
             </thead>
             <tbody>{recordList()}</tbody>
