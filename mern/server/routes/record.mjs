@@ -78,4 +78,39 @@ router.get("/classes/:class_id/sessions", async (req, res) => {
   res.status(200).send(results);
 });
 
+
+
+// Get all attendees for a particular session
+router.get("/sessions/:session_id/attendees", async (req, res) => {
+  const session_id = req.params.session_id;
+
+  // First, query the Check_in collection to get the attendee IDs for the given session
+  try {
+    const checkInCollection = await db.collection("Check_in");
+    const checkInResults = await checkInCollection.find({ session_id: new ObjectId(session_id) }).toArray();
+
+    if (checkInResults.length === 0) {
+      return res.status(404).send("No attendees checked in for this session.");
+    }
+
+    // Extract attendee IDs from the Check_in results
+    const attendeeIds = checkInResults.map((checkIn) => checkIn.attendee_id);
+
+    // Now, query the Attendee collection to get attendee details using attendeeIds
+    const attendeeCollection = await db.collection("Attendee");
+    const attendeeResults = await attendeeCollection.find({ _id: { $in: attendeeIds } }).toArray();
+
+    if (attendeeResults.length === 0) {
+      return res.status(404).send("No attendee data found for this session.");
+    }
+
+    res.status(200).send(attendeeResults);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
+
 export default router;
