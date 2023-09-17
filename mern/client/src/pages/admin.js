@@ -8,7 +8,6 @@ const ClassRecord = (props) => {
         props.sessionList(props.record._id);
     };
 
-
     return (
         <tr>
             <td>
@@ -49,7 +48,7 @@ const AttendeeRecord = (props) => {
     return (
         <tr>
             <td>
-                {props.record.check_in_name}
+                {props.record.first_name}
             </td>
         </tr>
     )
@@ -114,13 +113,15 @@ export default function Admin() {
     function recordList() {
         if (isSession) {
           return records.map((record) => (
-            <SessionRecord key={record._id} record={record} />
+            <SessionRecord key={record._id} record={record} attendeeList={getAttendeeRecords}/>
           ));
-        } else if (isAttendee) {
-            return records.map((record) => (
-                <AttendeeRecord key={record._id} record={record} attendeeList={getAttendeeRecords}/>
-            ));
-        } else {
+        } 
+        else if (isAttendee) {
+          return records.map((record) => (
+            <AttendeeRecord key={record._id} record={record}/>
+          ));
+        } 
+        else {
           return records.map((record) => (
             <ClassRecord key={record._id} record={record} sessionList={getSessionRecords} />
           ));
