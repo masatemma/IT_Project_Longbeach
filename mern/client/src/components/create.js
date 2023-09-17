@@ -22,7 +22,7 @@ export default function Create() {
     // When a post request is sent to the create url, we'll add a new record to the database.
     const newPerson = { ...form };
   
-    await fetch("http://localhost:5050/attendee/record", {
+    await fetch("http://localhost:5050/record", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export default function Create() {
      <h3>Create New Record</h3>
      <form onSubmit={onSubmit}>
        <div className="form-group">
-         <label htmlFor="first_name">First Name</label>
+         <label htmlFor="first_name">Name</label>
          <input
            type="text"
            className="form-control"
@@ -54,7 +54,7 @@ export default function Create() {
          />
        </div>
        <div className="form-group">
-         <label htmlFor="last_name">Last Name</label>
+         <label htmlFor="last_name">Position</label>
          <input
            type="text"
            className="form-control"
