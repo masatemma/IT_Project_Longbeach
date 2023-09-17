@@ -21,22 +21,7 @@ router.get("/attendee/:id", async (req, res) => {
   else res.send(result).status(200);
 });
 
-router.get("/classes/", async (req, res) => {
-  let collection = await db.collection("Class");
-  let results = await collection.find({}).toArray();
-  res.send(results).status(200);
-});
-
-router.post("/classes/", async (req, res) => {
-  let collection = await db.collection("Session");
-  let query = {class_id: new ObjectId(req.class_id)};
-  let result = await collection.findOne(query);
-  
-  if (!result) res.send({error: "Not found"}).status(404);
-  else res.send(result).status(200);
-});
-
-// Create a new record.
+// Create a new attendee record.
 router.post("/attendee/", async (req, res) => {
   let newDocument = {
     first_name: req.body.first_name,  
@@ -48,7 +33,7 @@ router.post("/attendee/", async (req, res) => {
   res.status(201).send(result); 
 });
 
-// This section will help you update a record by id.
+// This section will help you update an attendee record by id.
 router.patch("/attendee/:id", async (req, res) => {
   const query = { _id: new ObjectId(req.params.id) };
   const updates =  {
@@ -65,7 +50,7 @@ router.patch("/attendee/:id", async (req, res) => {
   res.send(result).status(200);
 });
 
-// This section will help you delete a record
+// This section will help you delete an attendee record
 router.delete("/attendee/:id", async (req, res) => {
   const query = { _id: new ObjectId(req.params.id) };
 
@@ -73,6 +58,24 @@ router.delete("/attendee/:id", async (req, res) => {
   let result = await collection.deleteOne(query);
 
   res.send(result).status(200);
+});
+
+// Get all classes
+router.get("/classes/", async (req, res) => {
+  let collection = await db.collection("Class");
+  let results = await collection.find({}).toArray();
+  res.send(results).status(200);
+});
+
+// Get all sessions for a particular class
+router.get("/classes/:class_id/sessions", async (req, res) => {
+  const class_id = req.params.class_id;
+  let collection = await db.collection("Session");
+  let results = await collection.find({class_id: new ObjectId(class_id)}).toArray();
+  if (results.length === 0) {
+    return res.status(404).send("Not found");
+  }
+  res.status(200).send(results);
 });
 
 export default router;
