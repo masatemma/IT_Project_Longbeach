@@ -104,7 +104,17 @@ router.get("/sessions/:session_id/attendees", async (req, res) => {
       return res.status(404).send("No attendee data found for this session.");
     }
 
-    res.status(200).send(attendeeResults);
+    // Combine check-in and attendee details into one array
+    const combinedResults = checkInResults.map((checkIn) => {
+      const attendee = attendeeResults.find((attendee) => attendee._id.equals(checkIn.attendee_id));
+      return {
+        _id: checkIn._id,
+        checkIn: checkIn,
+        attendee: attendee,
+      };
+    });
+
+    res.status(200).send(combinedResults);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
