@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import './admin.css';
 
 
 // This is for Class collection
@@ -10,7 +11,7 @@ const ClassRecord = (props) => {
 
     return (
         <tr>
-            <td>
+            <td className="large-cell">
                 <Link 
                     className="btn btn-link" 
                     onClick={handleClassLinkClick}
@@ -27,10 +28,9 @@ const SessionRecord = (props) => {
     const handleSessionLinkClick = () => {
         props.attendeeList(props.record._id);
     };
-    console.log(props.record._id);
     return (
         <tr>
-            <td>
+            <td className="large-cell">
                 <Link 
                     className="btn btn-link"
                     onClick={handleSessionLinkClick}
@@ -44,14 +44,13 @@ const SessionRecord = (props) => {
 
 // This is for Attendees collection
 const AttendeeRecord = (props) => {
-    console.log("Finding Attendees list");
     return (
         <tr>
-            <td>
-                {props.record.first_name}
-            </td>
+            <td className="large-cell" style={{width: '33%'}}>{props.record.first_name}</td>
+            <td className="large-cell" style={{width: '33%'}}>{props.record.last_name}</td>
+            <td className="large-cell" style={{width: '34%'}}>{props.record.email_address}</td>
         </tr>
-    )
+    );
 };
 
 export default function Admin() {
@@ -130,23 +129,24 @@ export default function Admin() {
 
     function get_table() {
         if (isSession) {
-            return 'Session'
+            return [<th className="large-cell" style={{width: '100%'}} key="session">Session</th>];
         } else if (isAttendee) {
-            return 'Attendee'
+            return [
+                <th className="large-cell" style={{width: '33%'}} key="first_name">First Name</th>,
+                <th className="large-cell" style={{width: '33%'}} key="last_name">Last Name</th>,
+                <th className="large-cell" style={{width: '34%'}} key="email">Email Address</th>
+            ];
         } else {
-            return 'Class'
+            return [<th className="large-cell" style={{width: '100%'}} key="class">Class</th>];
         }
     }
 
     // This following section will display the table with the records of individuals.
     return (
         <div>
-          <h3>Record List</h3>
           <table className='table table-striped' style={{ marginTop: 20 }}>
             <thead>
-              <tr>
-                <th>{get_table()}</th>
-              </tr>
+              {get_table()}
             </thead>
             <tbody>{recordList()}</tbody>
           </table>
