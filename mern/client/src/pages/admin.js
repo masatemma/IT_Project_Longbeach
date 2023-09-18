@@ -48,7 +48,10 @@ const AttendeeRecord = (props) => {
     return (
         <tr>
             <td>
-                {props.record.first_name}
+                {props.record.attendee.first_name} 
+                {" "}
+                {props.record.attendee.last_name}
+                {props.record.checkIn.attended ? " (Attended)" : " (Did not attend)"}
             </td>
         </tr>
     )
@@ -113,15 +116,13 @@ export default function Admin() {
     function recordList() {
         if (isSession) {
           return records.map((record) => (
-            <SessionRecord key={record._id} record={record} attendeeList={getAttendeeRecords}/>
+            <SessionRecord key={record._id} record={record} attendeeList={getAttendeeRecords} />
           ));
-        } 
-        else if (isAttendee) {
-          return records.map((record) => (
-            <AttendeeRecord key={record._id} record={record}/>
-          ));
-        } 
-        else {
+        } else if (isAttendee) {
+            return records.map((record) => (
+                <AttendeeRecord key={record._id} record={record} />
+            ));
+        } else {
           return records.map((record) => (
             <ClassRecord key={record._id} record={record} sessionList={getSessionRecords} />
           ));
