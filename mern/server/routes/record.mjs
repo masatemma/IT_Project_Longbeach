@@ -52,6 +52,53 @@ router.get("/checkin", async (req, res) => {
   }
 });
 
+// This section will help you get a list of all attendee details for a specific session.
+router.get("/attendees-for-session/:sessionId", async (req, res) => {
+  try {
+    let collection = await db.collection("Check_in");
+    let results = await collection.aggregate([
+      { $match: { session_id: new ObjectId(req.params.sessionId) } },
+      {
+        $lookup: {
+          from: "Attendee",
+          localField: "attendee_id",
+          foreignField: "_id",
+          as: "attendeeDetails"
+        }
+      },
+      {
+        $unwind: "$attendeeDetails"
+      },
+      {
+        $project: {
+          first_name: "$attendeeDetails.first_name",
+          last_name: "$attendeeDetails.last_name",
+          
+        }
+      }
+    ]).toArray();
+    
+    res.status(200).send(results);
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// This section will help you get a single session by its ID
+router.get("/session-details/:sessionId", async (req, res) => {
+  try {
+    let collection = await db.collection("Session");
+    let query = {_id: new ObjectId(req.params.sessionId)};
+    let result = await collection.findOne(query);
+
+    if (!result) res.send("Not found").status(404);
+    else res.send(result).status(200);
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
 // This section will help you check-in a person by id.
 router.patch("/checkin/:id", async (req, res) => {
   console.log("Check-in request received for id:", req.params.id);  // Debug log
