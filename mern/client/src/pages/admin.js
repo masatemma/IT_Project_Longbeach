@@ -8,7 +8,6 @@ const ClassRecord = (props) => {
         props.sessionList(props.record._id);
     };
 
-
     return (
         <tr>
             <td>
@@ -54,7 +53,6 @@ const AttendeeRecord = (props) => {
                 {props.record.attendee.last_name}
                 {props.record.checkIn.attended ? " (Attended)" : " (Did not attend)"}
             </td>
-            
         </tr>
     )
 };
