@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 const Record = (props) => (
   <tr>
     <td>{props.record.first_name}</td>
-    <td>{props.record.last_name}</td>
-    <td>{props.record.attended ? "Yes" : "No"}</td>
+    <td>{props.record.last_name}</td>    
     <td>
       <button 
         className="btn btn-primary" 
@@ -80,8 +79,7 @@ export default function CheckIn() {
         <thead>
           <tr>
             <th>First Name</th>
-            <th>Last Name</th>
-            <th>Attended</th>
+            <th>Last Name</th>            
           </tr>
         </thead>
         <tbody>{checkin()}</tbody>

@@ -21,17 +21,6 @@ router.get("/:id", async (req, res) => {
   else res.send(result).status(200);
 });
 
-// Create a new record.
-router.post("/", async (req, res) => {
-  let newDocument = {
-    first_name: req.body.first_name,  
-    last_name: req.body.last_name,    
-    email_address: req.body.email_address  
-  };
-  let collection = await db.collection("Attendee");  
-  let result = await collection.insertOne(newDocument);
-  res.status(201).send(result); 
-});
 
 // This section will help you update a record by id.
 router.patch("/:id", async (req, res) => {
@@ -50,15 +39,6 @@ router.patch("/:id", async (req, res) => {
   res.send(result).status(200);
 });
 
-// This section will help you delete a record
-router.delete("/:id", async (req, res) => {
-  const query = { _id: new ObjectId(req.params.id) };
-
-  const collection = db.collection("Attendee");
-  let result = await collection.deleteOne(query);
-
-  res.send(result).status(200);
-});
 
 // This section will help you get a list of all the check-ins with attendee details.
 router.get("/checkin", async (req, res) => {
