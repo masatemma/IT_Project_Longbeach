@@ -21,6 +21,9 @@ const Record = (props) => (
 // Updated CheckIn component
 export default function CheckIn() {
   const [records, setRecords] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
   
   useEffect(() => {
     async function getRecords() {
@@ -39,16 +42,27 @@ export default function CheckIn() {
     getRecords();
 
   }, []);
+
+  function showNotification(message, type) {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: "", type: "" });
+    }, 3000);
+  }  
   
-  async function handleCheckIn(id) {
-    const response = await fetch(`http://localhost:5050/record/checkin/${id}`, {
+  async function handleCheckIn() {
+    if (!selectedId) {
+      showNotification("Please select an attendee to check in.", "warning");
+      return;
+    }
+    const response = await fetch(`http://localhost:5050/record/checkin/${selectedId}`, {
       method: "PATCH"
     });
 
     if (response.ok) {
-      alert("Check-in successful");
+      showNotification("Check-in successful", "success");
       const updatedRecords = records.map(record => {
-        if (record._id === id) {
+        if (record._id === selectedId) {
           record.attended = true;
         }
         return record;
@@ -56,26 +70,24 @@ export default function CheckIn() {
       setRecords(updatedRecords);
     } else {
       const message = await response.text();
-      alert(`Check-in failed: ${message}`);
+      showNotification(`Check-in failed: ${message}`, "danger");
     }
   }
 
-  
-  function checkin() {
-    return records.map((record) => {
-      return (
-        <Record
-          record={record}
-          handleCheckIn={handleCheckIn}
-          key={record._id}
-        />
-      );
-    });
-  }
+  const filteredRecords = records.filter(record => {
+    const fullName = `${record.first_name} ${record.last_name}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
   
   return (
-    <div>
+    <div className="container">
+      {notification.show && (
+        <div className={`alert alert-${notification.type}`} role="alert">
+          {notification.message}
+        </div>
+      )}
       <h3>Attendance System</h3>
+<<<<<<< Updated upstream
       <table className="table table-striped" style={{ marginTop: 20 }}>
         <thead>
           <tr>
@@ -89,3 +101,39 @@ export default function CheckIn() {
     </div>
   );
 }
+=======
+      <input
+        type="text"
+        placeholder="Search by name"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+      />
+      <div style={{ height: '300px', overflowY: 'scroll' }}>
+        <table className="table table-striped" style={{ marginTop: 20 }}>
+          <thead>
+            <tr>
+              <th>Full Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRecords.map((record) => (
+              <tr 
+                key={record._id} 
+                style={selectedId === record._id ? { backgroundColor: '#f2f2f2' } : {}}
+                onClick={() => !record.attended && setSelectedId(record._id)}
+              >
+                <td>{`${record.first_name} ${record.last_name}`}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <button onClick={handleCheckIn}>
+        Check-In
+      </button>
+    </div>
+  );
+  
+}
+
+>>>>>>> Stashed changes
