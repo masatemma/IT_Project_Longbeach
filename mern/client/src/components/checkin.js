@@ -87,21 +87,6 @@ export default function CheckIn() {
         </div>
       )}
       <h3>Attendance System</h3>
-<<<<<<< Updated upstream
-      <table className="table table-striped" style={{ marginTop: 20 }}>
-        <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Attended</th>
-          </tr>
-        </thead>
-        <tbody>{checkin()}</tbody>
-      </table>
-    </div>
-  );
-}
-=======
       <input
         type="text"
         placeholder="Search by name"
@@ -136,4 +121,3 @@ export default function CheckIn() {
   
 }
 
->>>>>>> Stashed changes

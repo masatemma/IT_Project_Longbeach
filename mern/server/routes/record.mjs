@@ -90,8 +90,6 @@ router.get("/checkin", async (req, res) => {
   }
 });
 
-<<<<<<< Updated upstream
-=======
 // This section will help you get a list of all attendee details for a specific session.
 router.get("/attendees-for-session/:sessionId", async (req, res) => {
   try {
@@ -138,7 +136,6 @@ router.get("/session-details/:sessionId", async (req, res) => {
 });
 
 
->>>>>>> Stashed changes
 // This section will help you check-in a person by id.
 router.patch("/checkin/:id", async (req, res) => {
   console.log("Check-in request received for id:", req.params.id);  // Debug log
