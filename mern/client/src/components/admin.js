@@ -44,7 +44,7 @@ const SessionRecord = (props) => {
     )
 };
 
-// This is for Attendees collection
+// This is for Attendees collection. not used
 const AttendeeRecord = (props) => {
     return (
         <tr>
@@ -166,10 +166,9 @@ export function Attendees() {
         return;
       }
   
-      const response = await fetch(`http://localhost:5050/record/checkin/${sessionId}/${selectedId}`, {
+      const response = await fetch(`http://localhost:5050/record/checkin/${selectedId}`, {
         method: "PATCH"
       });
-  
       if (response.ok) {
         showNotification("Check-in successful", "success");
         const updatedRecords = records.map(record => {
@@ -216,10 +215,10 @@ export function Attendees() {
             <tbody>
               {filteredRecords.map((record) => (
                 <tr 
-                key={record._id} 
-                style={selectedId === record._id ? { backgroundColor: '#f2f2f2' } : {}}
-                onClick={() => setSelectedId(record._id)}
-              >
+                key={record.check_in_id} 
+                style={selectedId === record.check_in_id ? { backgroundColor: '#90EE90' } : {}}
+                onClick={() => setSelectedId(record.check_in_id)}
+                >
                 <td>{`${record.first_name} ${record.last_name}`}</td>
                 <td>{record.email_address}</td>
                 <td>{record.attended ? 'Yes' : 'No'}</td>

@@ -46,7 +46,54 @@ router.patch("/checkin/:session_id/:attendee_id", async (req, res) => {
   res.status(200).send("Check-in successful");
 });
 
+// Get all attendees for a particular session
+router.get("/sessions/:session_id/attendees", async (req, res) => {
+  const session_id = req.params.session_id;
 
+  // First, query the Check_in collection to get the attendee IDs for the given session
+  try {
+    const checkInCollection = await db.collection("Check_in");
+    const checkInResults = await checkInCollection.find({ session_id: new ObjectId(session_id) }).toArray();
+
+    if (checkInResults.length === 0) {
+      return res.status(404).send("No attendees checked in for this session.");
+    }
+
+    // Create a map of attendee_id to Check_in document
+    const checkInMap = {};
+    checkInResults.forEach((checkIn) => {
+      checkInMap[checkIn.attendee_id] = checkIn;
+    });
+
+    // Extract attendee IDs from the Check_in results
+    const attendeeIds = Object.keys(checkInMap);
+
+    // Now, query the Attendee collection to get attendee details using attendeeIds
+    const attendeeCollection = await db.collection("Attendee");
+    const attendeeResults = await attendeeCollection.find({ _id: { $in: attendeeIds.map(id => new ObjectId(id)) } }).toArray();
+
+    // Add the _id and attended status of the Check_in document to each attendee result
+    const resultsWithCheckInId = attendeeResults.map((attendee) => {
+      const checkIn = checkInMap[attendee._id];
+      return {
+        ...attendee,
+        check_in_id: checkIn._id,
+        attended: checkIn.attended
+      };
+    });
+
+    if (resultsWithCheckInId.length === 0) {
+      return res.status(404).send("No attendee data found for this session.");
+    }
+
+    res.status(200).send(resultsWithCheckInId);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+/*
 // Get all attendees for a particular session
 router.get("/sessions/:session_id/attendees", async (req, res) => {
   const session_id = req.params.session_id;
@@ -76,6 +123,7 @@ router.get("/sessions/:session_id/attendees", async (req, res) => {
     console.error(error);
   };
 });
+*/
 
 // This section will help you get a list of all the check-ins with attendee details.
 router.get("/checkin", async (req, res) => {
