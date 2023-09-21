@@ -6,8 +6,7 @@ import { Route, Routes } from "react-router-dom";
 // We import all the components we need in our app
 import Navbar from "./components/navbar";
 import CheckIn from "./components/checkin";
-import SessionAttendees from "./components/SessionAttendees";  // This line is the import you need
-
+import SessionAttendees from "./components/SessionAttendees";
  
 const App = () => {
  return (
