@@ -22,9 +22,33 @@ router.get("/classes/:class_id/sessions", async (req, res) => {
   res.status(200).send(results);
 });
 
+// This section will help you check-in a person by session_id and attendee_id.
+router.patch("/checkin/:session_id/:attendee_id", async (req, res) => {
+  console.log("Check-in request received for session_id:", req.params.session_id, "and attendee_id:", req.params.attendee_id);  // Debug log
+
+  const query = { 
+    session_id: new ObjectId(req.params.session_id),
+    attendee_id: new ObjectId(req.params.attendee_id)
+  };
+  const checkin_data = await db.collection("Check_in").findOne(query);
+
+  if (!checkin_data) {
+    console.log("No attendee found for session_id:", req.params.session_id, "and attendee_id:", req.params.attendee_id);  // Debug log
+    return res.status(404).send("Attendee not found");
+  }
+
+  if (checkin_data.attended) {
+    return res.status(400).send("Already checked in");
+  }
+
+  const updates = { $set: { attended: true } };
+  await db.collection("Check_in").updateOne(query, updates); // Update the "Check_in" collection
+  res.status(200).send("Check-in successful");
+});
+
 
 // Get all attendees for a particular session
-router.get("/sessions/:session_id/attendees", async (req, res)) => {
+router.get("/sessions/:session_id/attendees", async (req, res) => {
   const session_id = req.params.session_id;
 
   // First, query the Check_in collection to get the attendee IDs for the given session
@@ -50,8 +74,8 @@ router.get("/sessions/:session_id/attendees", async (req, res)) => {
     res.status(200).send(attendeeResults);
   } catch (error) {
     console.error(error);
-  }
-}
+  };
+});
 
 // This section will help you get a list of all the check-ins with attendee details.
 router.get("/checkin", async (req, res) => {
