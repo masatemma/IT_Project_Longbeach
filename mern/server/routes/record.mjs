@@ -140,15 +140,15 @@ router.get("/session-details/:sessionId", async (req, res) => {
 router.patch("/checkin/:id", async (req, res) => {
   console.log("Check-in request received for id:", req.params.id);  // Debug log
 
-  const query = { attendee_id: new ObjectId(req.params.id) };
-  const attendee = await db.collection("Check_in").findOne(query);
+  const query = { _id: new ObjectId(req.params.id) };
+  const checkin_data = await db.collection("Check_in").findOne(query);
 
-  if (!attendee) {
+  if (!checkin_data) {
     console.log("No attendee found for id:", req.params.id);  // Debug log
     return res.status(404).send("Attendee not found");
   }
 
-  if (attendee.attended) {
+  if (checkin_data.attended) {
     return res.status(400).send("Already checked in");
   }
 
