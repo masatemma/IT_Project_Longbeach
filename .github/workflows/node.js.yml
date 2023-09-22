@@ -13,20 +13,26 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [14.x, 16.x, 18.x]
+        directory: ['mern/server', 'mern/client']
 
     steps:
     - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
+    
+    - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: Install server dependencies
-      run: cd mern/server && npm ci
-    - name: Install client dependencies
-      run: cd mern/client && npm ci
-    - name: Start server
-      run: cd mern/server && node server.mjs &
-    - name: Start client
-      run: cd mern/client && npm start &
+
+    - name: Cache Node.js modules
+      uses: actions/cache@v3
+      with:
+        path: ${{ matrix.directory }}/node_modules
+        key: ${{ runner.OS }}-build-${{ matrix.directory }}-${{ matrix.node-version }}-${{ hashFiles('${{ matrix.directory }}/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-build-${{ matrix.directory }}-${{ matrix.node-version }}-
+    
+    - name: Install dependencies
+      run: |
+        cd ${{ matrix.directory }}
+        npm ci
