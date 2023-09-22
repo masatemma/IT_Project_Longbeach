@@ -52,7 +52,7 @@ export default function SessionAttendees() {
       const response = await fetch(`http://localhost:5050/record/checkin/${selectedId}`, {
         method: "PATCH"
       });
-  
+      
       if (response.ok) {
         showNotification("Check-in successful", "success");
         const updatedRecords = records.map(record => {
@@ -65,6 +65,7 @@ export default function SessionAttendees() {
       } else {
         const message = await response.text();
         showNotification(`Check-in failed: ${message}`, "danger");
+        
       }
     }
 
