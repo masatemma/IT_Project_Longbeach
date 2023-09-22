@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [18.x]
 
     steps:
     - uses: actions/checkout@v3
@@ -23,10 +23,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - name: Install server dependencies
-      run: cd server && npm ci
+      run: cd mern/server && npm ci
     - name: Install client dependencies
-      run: cd client && npm ci
+      run: cd mern/client && npm ci
     - name: Start server
-      run: cd server && node server.mjs &
+      run: cd mern/server && node server.mjs &
     - name: Start client
-      run: cd client && npm start &
+      run: cd mern/client && npm start &
