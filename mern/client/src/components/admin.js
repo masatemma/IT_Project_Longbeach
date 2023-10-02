@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import './Admin.css';
+import './admin.css';
 
 // This is for Class collection
 const ClassRecord = (props) => {
