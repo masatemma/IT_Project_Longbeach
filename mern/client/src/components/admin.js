@@ -96,7 +96,7 @@ export function Sessions() {
   
     return (
       <div>
-        <button style={{float: 'right', margin: '10px'}} onClick={() => alert('Generate Report Clicked!')}>
+        <button style={{float: 'right', margin: '10px', fontSize: '20px', padding: '10px'}} onClick={() => alert('Generate Report Clicked!')}>
             Generate Report
         </button>
         <table className='table table-striped' style={{ marginTop: 20 }}>
