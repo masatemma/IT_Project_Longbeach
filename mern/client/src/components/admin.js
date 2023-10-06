@@ -95,16 +95,21 @@ export function Sessions() {
     }, [classId]);
   
     return (
-      <table className='table table-striped' style={{ marginTop: 20 }}>
-        <thead>
-          <th className="large-cell" style={{width: '100%'}}>Session</th>
-        </thead>
-        <tbody>
-          {records.map((record) => (
-            <SessionRecord key={record._id} record={record} classId={classId} />
-          ))}
-        </tbody>
-      </table>
+      <div>
+        <button style={{float: 'right', margin: '10px'}} onClick={() => alert('Generate Report Clicked!')}>
+            Generate Report
+        </button>
+        <table className='table table-striped' style={{ marginTop: 20 }}>
+          <thead>
+            <th className="large-cell" style={{width: '100%'}}>Session</th>
+          </thead>
+          <tbody>
+            {records.map((record) => (
+              <SessionRecord key={record._id} record={record} classId={classId} />
+            ))}
+          </tbody>
+        </table>
+      </div>
     );
 }
 
