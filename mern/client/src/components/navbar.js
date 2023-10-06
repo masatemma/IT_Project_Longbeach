@@ -38,21 +38,6 @@ export default function Navbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav ml-auto">
-            {location.pathname.includes("admin") && (
-              <li className="nav-item">
-                <button 
-                  className="btn btn-link nav-link" 
-                  style={{ fontSize: '24px' }}
-                  onClick={goBack}
-                >
-                  Back to Classes
-                </button>
-              </li>
-            )}
-          </ul>
-        </div>
       </nav>
     </div>
   );
