@@ -189,8 +189,11 @@ router.get("/class-attendance-report/:classId", async (req, res) => {
         if (checkIn.attended) 
           sessionAttendances++;
       }
+      
+      let attendancePCent = 0;
 
-      let attendancePCent = (sessionAttendances / sessionAttendees * 100).toFixed(2);
+      if (sessionAttendees > 0)
+        attendancePCent = (sessionAttendances / sessionAttendees * 100).toFixed(2);
 
       worksheet.addRow([
         session.session_name, 
@@ -203,7 +206,10 @@ router.get("/class-attendance-report/:classId", async (req, res) => {
       totalAttendances += sessionAttendances;
     }
 
-    let attendancePCent = (totalAttendances / totalAttendees * 100).toFixed(2);
+    let attendancePCent = 0;
+
+    if (totalAttendees > 0)
+      attendancePCent = (totalAttendances / totalAttendees * 100).toFixed(2);
 
     worksheet.addRow([
       'Total', 
@@ -227,6 +233,5 @@ router.get("/class-attendance-report/:classId", async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
 
 export default router;
