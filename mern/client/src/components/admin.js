@@ -93,10 +93,41 @@ export function Sessions() {
   
       getSessionRecords();
     }, [classId]);
+
+    const handleGenerateReport = async () => {
+      try {
+          const response = await fetch(`http://localhost:5050/record/class-attendance-report/${classId}`);
+          if (!response.ok) {
+              const message = `An error occurred while generating the report: ${response.statusText}`;
+              window.alert(message);
+              return;
+          }
+
+           // Log all response headers
+          for (var pair of response.headers.entries()) {
+            console.log(pair[0]+ ': '+ pair[1]);
+          }
+
+          const className = response.headers.get('Class-Name');
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${className} Report.xlsx`
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+      } 
+      catch (error) {
+          console.error("Error generating the report:", error);
+      }
+  };
   
     return (
       <div>
-        <button style={{float: 'right', margin: '10px', fontSize: '20px', padding: '10px'}} onClick={() => alert('Generate Report Clicked!')}>
+        <button 
+          style={{float: 'right', margin: '10px', fontSize: '20px', padding: '10px'}} 
+          onClick={handleGenerateReport}>
             Generate Report
         </button>
         <table className='table table-striped' style={{ marginTop: 20 }}>

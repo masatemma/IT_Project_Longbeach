@@ -160,6 +160,7 @@ router.patch("/checkin/:id", async (req, res) => {
 
 router.get("/class-attendance-report/:classId", async (req, res) => {
   try {
+    console.log("here");
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Attendance Report');
 
@@ -218,17 +219,22 @@ router.get("/class-attendance-report/:classId", async (req, res) => {
       attendancePCent.toString()
     ]);
 
+    console.log(classRes.class_name);
+
     // Set response headers to indicate it's an Excel file
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename=' + classRes.class_name
     + ' Report.xlsx');
+    res.setHeader('Class-Name', classRes.class_name);
+    console.log(res.getHeaders());
     
     // Send the Excel file as the response
     workbook.xlsx.write(res)
     .then(() => {
       res.end();
     });
-  } catch (error) {
+  } 
+  catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
   }
