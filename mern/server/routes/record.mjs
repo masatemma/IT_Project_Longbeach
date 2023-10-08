@@ -1,6 +1,8 @@
 import express from "express";
 import db from "../db/conn.mjs";
 import { ObjectId } from "mongodb";
+import ExcelJS from "exceljs";
+//const ExcelJS = require('exceljs');
 
 const router = express.Router();
 
@@ -153,6 +155,83 @@ router.patch("/checkin/:id", async (req, res) => {
   const updates = { $set: { attended: true } };
   await db.collection("Check_in").updateOne(query, updates); // Update the "Check_in" collection
   res.status(200).send("Check-in successful");
+});
+
+
+router.get("/class-attendance-report/:classId", async (req, res) => {
+  try {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Attendance Report');
+
+    // Add headers to the worksheet
+    worksheet.addRow(['Session', 'Attendees', 'Attendances', 'Percentage']);
+
+    let classCollection = await db.collection("Class");
+    let classRes = await classCollection.findOne({_id: new ObjectId(req.params.classId)});
+
+    let sessionCollection = await db.collection("Session");
+    let sessionQuery = {class_id: new ObjectId(req.params.classId)};
+    let sessions = await sessionCollection.find(sessionQuery).toArray();
+
+    let totalAttendees = 0;
+    let totalAttendances = 0;
+
+    for (const session of sessions) {
+      let sessionAttendees = 0;
+      let sessionAttendances = 0;
+
+      let checkInCollection = await db.collection("Check_in");
+      let checkInQuery = {session_id: new ObjectId(session._id)};
+      let sessionCheckIns = await checkInCollection.find(checkInQuery).toArray();
+
+      for (const checkIn of sessionCheckIns) {
+        sessionAttendees++;
+        if (checkIn.attended) 
+          sessionAttendances++;
+      }
+      
+      let attendancePCent = 0;
+
+      if (sessionAttendees > 0)
+        attendancePCent = (sessionAttendances / sessionAttendees * 100).toFixed(2);
+
+      worksheet.addRow([
+        session.session_name, 
+        sessionAttendees.toString(), 
+        sessionAttendances.toString(),
+        attendancePCent.toString()
+      ]);
+
+      totalAttendees += sessionAttendees;
+      totalAttendances += sessionAttendances;
+    }
+
+    let attendancePCent = 0;
+
+    if (totalAttendees > 0)
+      attendancePCent = (totalAttendances / totalAttendees * 100).toFixed(2);
+
+    worksheet.addRow([
+      'Total', 
+      totalAttendees.toString(), 
+      totalAttendances.toString(),
+      attendancePCent.toString()
+    ]);
+
+    // Set response headers to indicate it's an Excel file
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=' + classRes.class_name
+    + ' Report.xlsx');
+    
+    // Send the Excel file as the response
+    workbook.xlsx.write(res)
+    .then(() => {
+      res.end();
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 export default router;
