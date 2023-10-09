@@ -64,16 +64,18 @@ export function Classes() {
     }, []);
   
     return (
-      <table className='table table-striped' style={{ marginTop: 20 }}>
-        <thead>
-          <th className="large-cell" style={{width: '100%'}}>Class</th>
-        </thead>
-        <tbody>
-          {records.map((record) => (
-            <ClassRecord key={record._id} record={record} />
-          ))}
-        </tbody>
-      </table>
+      <div className="table-scroll-container">
+            <table className="nameTable">
+              <thead>
+              <th className="tableLabel" style={{width: '100%'}}>Class</th>
+              </thead>
+              <tbody>
+                {records.map((record) => (
+                  <ClassRecord key={record._id} record={record} />
+                ))}
+              </tbody>
+            </table>
+      </div>
     );
 }
 
@@ -127,22 +129,27 @@ export function Sessions() {
   };
   
     return (
+    
+
       <div>
         <button 
           style={{float: 'right', margin: '10px', fontSize: '20px', padding: '10px'}} 
           onClick={handleGenerateReport}>
             Generate Report
         </button>
-        <table className='table table-striped' style={{ marginTop: 20 }}>
-          <thead>
-            <th className="large-cell" style={{width: '100%'}}>Session</th>
-          </thead>
-          <tbody>
-            {records.map((record) => (
-              <SessionRecord key={record._id} record={record} classId={classId} />
-            ))}
-          </tbody>
-        </table>
+
+        <div className="table-scroll-container">
+            <table className="nameTable">
+              <thead>
+              <th className="tableLabel" style={{width: '100%'}}>Session</th>
+              </thead>
+              <tbody>
+                {records.map((record) => (
+                <SessionRecord key={record._id} record={record} classId={classId} />
+              ))}
+              </tbody>
+            </table>
+         </div>          
       </div>
     );
 }
