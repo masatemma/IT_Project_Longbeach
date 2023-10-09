@@ -1,5 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";  // Import useParams hook
+import './TableUI.css';
+
+
+// Notification Component
+const Notification = ({ type, message, show }) => {
+  if (!show) return null;
+  return <div className={`alert alert-${type}`} role="alert">{message}</div>;
+};
+
+// Table Row Component
+const TableRow = ({ record, isSelected, onRowClick, selectedId }) => (
+  <tr
+      key={record._id}
+      className={`${isSelected ? "even-row" : ""} ${record._id === selectedId ? "selected-row" : ""}`}
+      onClick={onRowClick}
+  >
+      <td className="fullname">{`${record.first_name} ${record.last_name}`}</td>
+  </tr>
+);
 
 export default function SessionAttendees() {
     const [records, setRecords] = useState([]);
@@ -75,42 +94,45 @@ export default function SessionAttendees() {
     });
 
     return (
-    <div className="container">
-      {notification.show && (
-        <div className={`alert alert-${notification.type}`} role="alert">
-          {notification.message}
-        </div>
-      )}
-      <h3>Attendees for Session: {session.session_name}</h3>
-      <input
-        type="text"
-        placeholder="Search by name"
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-      />
-      <div style={{ height: '300px', overflowY: 'scroll' }}>
-        <table className="table table-striped" style={{ marginTop: 20 }}>
-          <thead>
-            <tr>
-              <th>Full Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRecords.map((record) => (
-              <tr
-                key={record._id}
-                style={selectedId === record._id ? { backgroundColor: '#f2f2f2' } : {}}
-                onClick={() => !record.attended && setSelectedId(record._id)}
-              >
-                <td>{`${record.first_name} ${record.last_name}`}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="container">
+          <Notification type={notification.type} message={notification.message} show={notification.show} />
+
+          <h3>Attendees for Session: {session.session_name}</h3>
+
+          <div className="searchBar-container">
+              <input
+                  className="searchBar"
+                  type="text"
+                  placeholder="Search by name"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+              />
+          </div>
+
+          <div className="table-scroll-container">
+            <table className="nameTable">
+              <thead>
+                  <th className="tableLabel">Full Name</th>
+              </thead>
+              <tbody>
+                {filteredRecords.map((record, index) => (
+                  <TableRow
+                  key={record._id}
+                  record={record}
+                  isSelected={index % 2 === 0}
+                  selectedId={selectedId}  // Pass the selectedId as a prop here
+                  onRowClick={() => !record.attended && setSelectedId(record._id)}
+                 />
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="centered-button">
+              <button onClick={handleCheckIn}>
+                  <div className="buttonName">Check In</div>
+              </button>
+          </div>
       </div>
-      <button onClick={handleCheckIn}>
-        Check-In
-      </button>
-    </div>
   );
 }

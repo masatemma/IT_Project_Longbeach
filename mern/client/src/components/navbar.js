@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation, NavLink, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
+import TitleLogo from './TitleLogo';
 
 export default function Navbar() {
   const location = useLocation();
