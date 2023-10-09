@@ -30,11 +30,11 @@ const Notification = ({ type, message, show }) => {
   return <div className={`alert alert-${type}`} role="alert">{message}</div>;
 };
 
-const AttendeeRow = ({ record, selectedId, setSelectedId }) => (
+const AttendeeRow = ({ record, onRowClick, selectedId }) => (
   <tr 
     key={record._id}
     className={record._id === selectedId ? "selected-row" : ""}
-    onClick={() => !record.attended && setSelectedId(record._id)}     
+    onClick={onRowClick}    
   >
     <td>{`${record.first_name} ${record.last_name}`}</td>
     <td>{record.email_address}</td>
@@ -215,7 +215,7 @@ export function Attendees() {
 
     return (
       <div className="container">        
-        <Notification type={notification.type} message={notification.message} show={notification.show} />
+      <Notification type={notification.type} message={notification.message} show={notification.show} />
       
         <h3>Attendees for Session: {session.session_name}</h3>
         
@@ -243,7 +243,8 @@ export function Attendees() {
                   <AttendeeRow
                       key={record._id}
                       record={record}   
-                      onRowClick={() => !record.attended && setSelectedId(record._id)}                   
+                      selectedId={selectedId} 
+                      onRowClick={() => !record.attended && setSelectedId(record._id)}
                   />
               ))}
             </tbody>

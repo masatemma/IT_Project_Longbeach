@@ -26,7 +26,6 @@ export default function SessionAttendees() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedId, setSelectedId] = useState(null);
     const [notification, setNotification] = useState({ show: false, message: "", type: "" });
-
     const { sessionId } = useParams();
 
     useEffect(() => {
