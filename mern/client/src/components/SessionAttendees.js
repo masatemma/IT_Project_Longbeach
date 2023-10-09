@@ -7,8 +7,8 @@ export default function SessionAttendees() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedId, setSelectedId] = useState(null);
     const [notification, setNotification] = useState({ show: false, message: "", type: "" });
-    
-    const { sessionId } = useParams();  
+
+    const { sessionId } = useParams();
 
     useEffect(() => {
       async function fetchData() {
@@ -21,7 +21,7 @@ export default function SessionAttendees() {
         }
         const attendees = await responseAttendees.json();
         setRecords(attendees);
-    
+
         // Fetch session details
         const responseSession = await fetch(`http://localhost:5050/record/session-details/${sessionId}`);
         if (!responseSession.ok) {
@@ -32,7 +32,7 @@ export default function SessionAttendees() {
         const sessionData = await responseSession.json();
         setSession(sessionData);
       }
-    
+
       fetchData();
     }, [sessionId]);
 
@@ -48,11 +48,11 @@ export default function SessionAttendees() {
         showNotification("Please select an attendee to check in.", "warning");
         return;
       }
-  
+
       const response = await fetch(`http://localhost:5050/record/checkin/${selectedId}`, {
         method: "PATCH"
       });
-  
+
       if (response.ok) {
         showNotification("Check-in successful", "success");
         const updatedRecords = records.map(record => {
@@ -65,6 +65,7 @@ export default function SessionAttendees() {
       } else {
         const message = await response.text();
         showNotification(`Check-in failed: ${message}`, "danger");
+
       }
     }
 
@@ -96,8 +97,8 @@ export default function SessionAttendees() {
           </thead>
           <tbody>
             {filteredRecords.map((record) => (
-              <tr 
-                key={record._id} 
+              <tr
+                key={record._id}
                 style={selectedId === record._id ? { backgroundColor: '#f2f2f2' } : {}}
                 onClick={() => !record.attended && setSelectedId(record._id)}
               >

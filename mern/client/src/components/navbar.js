@@ -1,36 +1,27 @@
 import React from "react";
- 
-// We import bootstrap to make our application look better.
+import { useLocation, NavLink, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
- 
-// We import NavLink to utilize the react router.
-import { NavLink } from "react-router-dom";
- 
-// Here, we display our Navbar
+
 export default function Navbar() {
- return (
-   <div>
-     <nav className="navbar navbar-expand-lg navbar-light bg-light">
-       <NavLink className="navbar-brand" to="/">
-       <img style={{"width" : 25 + '%'}} src="https://d3cy9zhslanhfa.cloudfront.net/media/3800C044-6298-4575-A05D5C6B7623EE37/4B45D0EC-3482-4759-82DA37D8EA07D229/webimage-8A27671A-8A53-45DC-89D7BF8537F15A0D.png"></img>
-       </NavLink>
-       <button
-         className="navbar-toggler"
-         type="button"
-         data-toggle="collapse"
-         data-target="#navbarSupportedContent"
-         aria-controls="navbarSupportedContent"
-         aria-expanded="false"
-         aria-label="Toggle navigation"
-       >
-         <span className="navbar-toggler-icon"></span>
-       </button>
- 
-       <div className="collapse navbar-collapse" id="navbarSupportedContent">
-         <ul className="navbar-nav ml-auto">
-         </ul>
-       </div>
-     </nav>
-   </div>
- );
+  const location = useLocation();
+  const navigate = useNavigate();
+  const goBack = () => {
+    navigate(-1);
+  };
+
+  return (
+    <div>
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <img
+            src="https://static.wixstatic.com/media/6d953a_46999fe10c9f41eeb37ad293777329ec~mv2.png/v1/fill/w_293,h_150,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/small_Logo_LbP2_edited.png"
+            alt="Your Logo"
+            width="293"
+            height="150"
+          />
+          <button onClick={goBack} style={{ fontSize: '20px', padding: '10px', marginLeft: '10px' }}>Back</button>
+        </div>
+      </nav>
+    </div>
+  );
 }
