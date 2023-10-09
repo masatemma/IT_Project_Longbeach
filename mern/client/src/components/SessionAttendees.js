@@ -10,10 +10,10 @@ const Notification = ({ type, message, show }) => {
 };
 
 // Table Row Component
-const TableRow = ({ record, isSelected, onRowClick, selectedId }) => (
+const TableRow = ({ record, onRowClick, selectedId }) => (
   <tr
       key={record._id}
-      className={`${isSelected ? "even-row" : ""} ${record._id === selectedId ? "selected-row" : ""}`}
+      className={`${record._id === selectedId ? "selected-row" : ""}`}
       onClick={onRowClick}
   >
       <td className="fullname">{`${record.first_name} ${record.last_name}`}</td>
@@ -114,11 +114,10 @@ export default function SessionAttendees() {
                   <th className="tableLabel">Full Name</th>
               </thead>
               <tbody>
-                {filteredRecords.map((record, index) => (
+                {filteredRecords.map((record) => (
                   <TableRow
                   key={record._id}
-                  record={record}
-                  isSelected={index % 2 === 0}
+                  record={record}                  
                   selectedId={selectedId}  // Pass the selectedId as a prop here
                   onRowClick={() => !record.attended && setSelectedId(record._id)}
                  />
@@ -128,9 +127,9 @@ export default function SessionAttendees() {
           </div>
 
           <div className="centered-button">
-              <button onClick={handleCheckIn}>
-                  <div className="buttonName">Check In</div>
-              </button>
+            <button onClick={handleCheckIn}>
+              <div className="buttonName">Check In</div>
+            </button>
           </div>
       </div>
   );

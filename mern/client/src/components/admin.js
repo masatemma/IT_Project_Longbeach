@@ -30,29 +30,21 @@ const Notification = ({ type, message, show }) => {
   return <div className={`alert alert-${type}`} role="alert">{message}</div>;
 };
 
-const AttendeeRow = ({ record, onRowClick, selectedId }) => (
-  <tr 
-    key={record._id}
-    className={record._id === selectedId ? "selected-row" : ""}
-    onClick={onRowClick}    
-  >
-    <td>{`${record.first_name} ${record.last_name}`}</td>
-    <td>{record.email_address}</td>
-    <td>{record.attended ? 'Yes' : 'No'}</td>
-  </tr>
-);
+const TableRow = ({ record, onRowClick, selectedId }) => {
+  
+  return(
+    <tr
+      key={record._id}
+      className={`${record._id === selectedId ? "selected-row" : ""}`}
+      onClick={onRowClick}
+     >
+      <td className="fullname">{`${record.first_name} ${record.last_name}`}</td>
+      <td>{record.email_address}</td>
+      <td>{record.attended ? 'Yes' : 'No'}</td>      
+    </tr>
+    );
+  };
 
-
-// Utility function to handle data fetching with error handling
-async function fetchData(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    const message = `An error occurred: ${response.statusText}`;
-    window.alert(message);
-    return null;
-  }
-  return await response.json();
-}
 
 export function Classes() {
     const [records, setRecords] = useState([]);
@@ -85,6 +77,7 @@ export function Classes() {
     );
 }
 
+//Sessions URL
 export function Sessions() {
     const { classId } = useParams();
     const [records, setRecords] = useState([]);
@@ -154,110 +147,121 @@ export function Sessions() {
     );
 }
 
-
 export function Attendees() {
-    const { sessionId } = useParams();
-    const [records, setRecords] = useState([]);
-    const [session, setSession] = useState({});  // New state variable for session details
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedId, setSelectedId] = useState(null);
-    const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+  const [records, setRecords] = useState([]);
+  const [session, setSession] = useState({});  // New state variable for session details
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+  const { sessionId } = useParams();
 
 
-    useEffect(() => {
-      async function initFetch() {
-        const attendees = await fetchData(`http://localhost:5050/record/admin/attendees-for-session/${sessionId}`);
-        setRecords(attendees);
-        const sessionData = await fetchData(`http://localhost:5050/record/session-details/${sessionId}`);
-        setSession(sessionData);
-      }
-      initFetch();
-    }, [sessionId]);   
-
-    function showNotification(message, type) {
-      setNotification({ show: true, message, type });
-      setTimeout(() => {
-        setNotification({ show: false, message: "", type: "" });
-      }, 3000);
-    }    
-
-    async function handleCheckIn() {
-      if (!selectedId) {
-        showNotification("Please select an attendee to check in.", "warning");
+  useEffect(() => {
+    async function fetchData() {
+      // Fetch attendees
+      const responseAttendees = await fetch(`http://localhost:5050/record/admin/attendees-for-session/${sessionId}`);
+      if (!responseAttendees.ok) {
+        const message = `An error occurred: ${responseAttendees.statusText}`;
+        window.alert(message);
         return;
       }
-    
-      const response = await fetch(`http://localhost:5050/record/checkin/${selectedId}`, {
-        method: "PATCH"
-      });
-    
-      if (response.ok) {
-        const updatedRecords = records.map(record => {
-          if (record._id === selectedId) {
-            record.attended = true;
-          }
-          return record;
-        });
-        setRecords(updatedRecords);
-        setSelectedId(null); // Reset the selection after successful check-in
-        showNotification("Check-in successful", "success");
-      } else {
-        const message = await response.text();
-        showNotification(`Check-in failed: ${message}`, "danger");
+      const attendees = await responseAttendees.json();
+      setRecords(attendees);
+
+      // Fetch session details
+      const responseSession = await fetch(`http://localhost:5050/record/session-details/${sessionId}`);
+      if (!responseSession.ok) {
+        const message = `An error occurred: ${responseSession.statusText}`;
+        window.alert(message);
+        return;
       }
+      const sessionData = await responseSession.json();
+      setSession(sessionData);
     }
-    
+
+    fetchData();
+  }, [sessionId]);
   
-    const filteredRecords = records.filter(record => {
-      const fullName = `${record.first_name} ${record.last_name}`.toLowerCase();
-      return fullName.includes(searchTerm.toLowerCase());
+
+  function showNotification(message, type) {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: "", type: "" });
+    }, 3000);
+  }
+
+  async function handleCheckIn() {
+    if (!selectedId) {
+      showNotification("Please select an attendee to check in.", "warning");
+      return;
+    }
+
+    const response = await fetch(`http://localhost:5050/record/checkin/${selectedId}`, {
+      method: "PATCH"
     });
 
-    return (
-      <div className="container">        
-      <Notification type={notification.type} message={notification.message} show={notification.show} />
-      
+    if (response.ok) {
+      showNotification("Check-in successful", "success");
+      const updatedRecords = records.map(record => {
+        if (record._id === selectedId) {
+          record.attended = true;
+        }
+        return record;
+      });
+      setRecords(updatedRecords);
+    } else {
+      const message = await response.text();
+      showNotification(`Check-in failed: ${message}`, "danger");
+
+    }
+  }
+
+  const filteredRecords = records.filter(record => {
+    const fullName = `${record.first_name} ${record.last_name}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
+
+  return (
+    <div className="container">
+        <Notification type={notification.type} message={notification.message} show={notification.show} />
+
         <h3>Attendees for Session: {session.session_name}</h3>
-        
+
         <div className="searchBar-container">
-          <input
-            className="searchBar"
-            type="text"
-            placeholder="Search by name"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-          />
+            <input
+                className="searchBar"
+                type="text"
+                placeholder="Search by name"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+            />
         </div>
-        
+
         <div className="table-scroll-container">
           <table className="nameTable">
             <thead>
-              <tr>
-                  <th className="tableLabel">Full Name</th>
-                  <th className="tableLabel">Email Address</th>
-                  <th className="tableLabel">Attended</th>
-              </tr>
+                <th className="tableLabel">Full Name</th>
+                <th className="tableLabel">Email Address</th>
+                <th className="tableLabel">Attended</th>
             </thead>
             <tbody>
               {filteredRecords.map((record) => (
-                  <AttendeeRow
-                      key={record._id}
-                      record={record}   
-                      selectedId={selectedId} 
-                      onRowClick={() => !record.attended && setSelectedId(record._id)}
-                  />
+                <TableRow
+                key={record._id}
+                record={record}                  
+                selectedId={selectedId}  // Pass the selectedId as a prop here
+                onRowClick={() => !record.attended && setSelectedId(record._id)}                
+               />
               ))}
             </tbody>
           </table>
-        </div> 
+        </div>
 
         <div className="centered-button">
-            <button onClick={handleCheckIn}>
-                <div className="buttonName">Check In</div>
-            </button>
-        </div>  
-
+          <button onClick={handleCheckIn}>
+            <div className="buttonName">Check In</div>
+          </button>
+        </div>
     </div>
-  );
+);
 }
-

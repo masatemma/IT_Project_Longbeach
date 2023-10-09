@@ -59,7 +59,7 @@ router.get("/admin/attendees-for-session/:sessionId", async (req, res) => {
   try {
     let collection = await db.collection("Check_in");
     let results = await collection.aggregate([
-      { $match: { session_id: new ObjectId(req.params.sessionId) } },
+      { $match: { session_id: new ObjectId(req.params.sessionId) }},
       {
         $lookup: {
           from: "Attendee",
@@ -76,7 +76,7 @@ router.get("/admin/attendees-for-session/:sessionId", async (req, res) => {
           first_name: "$attendeeDetails.first_name",
           last_name: "$attendeeDetails.last_name",
           email_address: "$attendeeDetails.email_address",
-          attended: 1
+          attended:"$attendeeDetails.attended",
         }
       }
     ]).toArray();

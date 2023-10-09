@@ -9,7 +9,7 @@ import SessionAttendees from "./components/SessionAttendees";
 
 const App = () => {
   return (
-    <div>
+    <div>      
       <Navbar/>
       <Routes>
         <Route path="/" element={<Navigate to="/classes" />} />
