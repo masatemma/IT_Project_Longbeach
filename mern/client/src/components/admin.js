@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import './TableUI.css';
 
+
 const ClassRecord = ({ record }) => (
   <tr>
     <td className="large-cell">
@@ -24,15 +25,23 @@ const SessionRecord = ({ record, classId }) => (
   </tr>
 );
 
+const Notification = ({ type, message, show }) => {
+  if (!show) return null;
+  return <div className={`alert alert-${type}`} role="alert">{message}</div>;
+};
+
 const AttendeeRow = ({ record, selectedId, setSelectedId }) => (
   <tr 
-    key={record._id}     
+    key={record._id}
+    className={record._id === selectedId ? "selected-row" : ""}
+    onClick={() => !record.attended && setSelectedId(record._id)}     
   >
     <td>{`${record.first_name} ${record.last_name}`}</td>
     <td>{record.email_address}</td>
     <td>{record.attended ? 'Yes' : 'No'}</td>
   </tr>
 );
+
 
 // Utility function to handle data fetching with error handling
 async function fetchData(url) {
@@ -145,12 +154,15 @@ export function Sessions() {
     );
 }
 
+
 export function Attendees() {
     const { sessionId } = useParams();
     const [records, setRecords] = useState([]);
     const [session, setSession] = useState({});  // New state variable for session details
     const [searchTerm, setSearchTerm] = useState("");
-    
+    const [selectedId, setSelectedId] = useState(null);
+    const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+
 
     useEffect(() => {
       async function initFetch() {
@@ -162,6 +174,40 @@ export function Attendees() {
       initFetch();
     }, [sessionId]);   
 
+    function showNotification(message, type) {
+      setNotification({ show: true, message, type });
+      setTimeout(() => {
+        setNotification({ show: false, message: "", type: "" });
+      }, 3000);
+    }    
+
+    async function handleCheckIn() {
+      if (!selectedId) {
+        showNotification("Please select an attendee to check in.", "warning");
+        return;
+      }
+    
+      const response = await fetch(`http://localhost:5050/record/checkin/${selectedId}`, {
+        method: "PATCH"
+      });
+    
+      if (response.ok) {
+        const updatedRecords = records.map(record => {
+          if (record._id === selectedId) {
+            record.attended = true;
+          }
+          return record;
+        });
+        setRecords(updatedRecords);
+        setSelectedId(null); // Reset the selection after successful check-in
+        showNotification("Check-in successful", "success");
+      } else {
+        const message = await response.text();
+        showNotification(`Check-in failed: ${message}`, "danger");
+      }
+    }
+    
+  
     const filteredRecords = records.filter(record => {
       const fullName = `${record.first_name} ${record.last_name}`.toLowerCase();
       return fullName.includes(searchTerm.toLowerCase());
@@ -169,6 +215,7 @@ export function Attendees() {
 
     return (
       <div className="container">        
+        <Notification type={notification.type} message={notification.message} show={notification.show} />
       
         <h3>Attendees for Session: {session.session_name}</h3>
         
@@ -195,12 +242,20 @@ export function Attendees() {
               {filteredRecords.map((record) => (
                   <AttendeeRow
                       key={record._id}
-                      record={record}                      
+                      record={record}   
+                      onRowClick={() => !record.attended && setSelectedId(record._id)}                   
                   />
               ))}
             </tbody>
           </table>
-        </div>      
+        </div> 
+
+        <div className="centered-button">
+            <button onClick={handleCheckIn}>
+                <div className="buttonName">Check In</div>
+            </button>
+        </div>  
+
     </div>
   );
 }
