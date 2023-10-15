@@ -208,7 +208,7 @@ router.get("/class-attendance-report/:classId/", async (req, res) => {
     }
 
     //Rows to print
-    let rows = [[''], ['Attendees']];
+    let rows = [['Attendees'], ['']];
 
     //Total attendance
     let attendeeTotalAttendanceList = [];
@@ -256,8 +256,8 @@ router.get("/class-attendance-report/:classId/", async (req, res) => {
 
     //Calculate attendee and class totals
     let classTotAttendance = 0;
-    rows[0].push('');
-    rows[1].push('Total Attendance');
+    rows[0].push('Total Attendance');
+    rows[1].push('');
     for (let atdeeNum = 0; atdeeNum < attendeeTotalAttendanceList.length; atdeeNum++) {
       let attendeeTotalAttendance = attendeeTotalAttendanceList[atdeeNum]
       rows[atdeeNum + 2].push(attendeeTotalAttendance);
