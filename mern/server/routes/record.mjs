@@ -208,7 +208,7 @@ router.get("/class-attendance-report/:classId/", async (req, res) => {
     }
 
     //Rows to print
-    let rows = [[''], ['']];
+    let rows = [[''], ['Attendees']];
 
     //Total attendance
     let attendeeTotalAttendanceList = [];
