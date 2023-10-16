@@ -157,67 +157,119 @@ router.patch("/checkin/:id", async (req, res) => {
   res.status(200).send("Check-in successful");
 });
 
-
-router.get("/class-attendance-report/:classId", async (req, res) => {
+//router.get("/class-attendance-report/:classId/:startTime/:endTime", async (req, res) => {
+router.get("/class-attendance-report/:classId/", async (req, res) => {
   try {
     console.log("here");
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Attendance Report');
 
-    // Add headers to the worksheet
-    worksheet.addRow(['Session', 'Attendees', 'Attendances', 'Percentage']);
-
+    //Find info of class
     let classCollection = await db.collection("Class");
     let classRes = await classCollection.findOne({_id: new ObjectId(req.params.classId)});
-
+  
+    //Find sessions in class in the timeframe
     let sessionCollection = await db.collection("Session");
-    let sessionQuery = {class_id: new ObjectId(req.params.classId)};
+    let sessionQuery = {
+      class_id: new ObjectId(req.params.classId)//, 
+      //session_start_time: {$gte: req.params.startTime},
+      //session_end_time: {$lte: req.params.endTime}
+    };
     let sessions = await sessionCollection.find(sessionQuery).toArray();
 
-    let totalAttendees = 0;
-    let totalAttendances = 0;
+    let checkInCollection = await db.collection("Check_in");
+    let attendeeCollection = await db.collection("Attendee");
 
-    for (const session of sessions) {
-      let sessionAttendees = 0;
-      let sessionAttendances = 0;
+    //List of attendees in all sessions
+    let attendees = [];
 
-      let checkInCollection = await db.collection("Check_in");
-      let checkInQuery = {session_id: new ObjectId(session._id)};
-      let sessionCheckIns = await checkInCollection.find(checkInQuery).toArray();
+    //List of list of session check-ins (same index as corresponding sessions)
+    let sessionCheckInsArray = [];
 
-      for (const checkIn of sessionCheckIns) {
-        sessionAttendees++;
-        if (checkIn.attended) 
-          sessionAttendances++;
-      }
-      
-      let attendancePCent = 0;
-
-      if (sessionAttendees > 0)
-        attendancePCent = (sessionAttendances / sessionAttendees * 100).toFixed(2);
-
-      worksheet.addRow([
-        session.session_name, 
-        sessionAttendees.toString(), 
-        sessionAttendances.toString(),
-        attendancePCent.toString()
-      ]);
-
-      totalAttendees += sessionAttendees;
-      totalAttendances += sessionAttendances;
+    //Check if attendee in a list
+    const isAttendeeInList = (aList, newA) => {
+      for (const atdee of aList)
+        if (atdee._id.equals(newA._id)) 
+          return true;
+      return false;
     }
 
-    let attendancePCent = 0;
+    //Fill up list of attendees
+    for (const session of sessions) {
+      let checkInQuery = {session_id: new ObjectId(session._id)};
+      let sessionCheckIns = await checkInCollection.find(checkInQuery).toArray();
+      sessionCheckInsArray.push(sessionCheckIns);
+      //console.log(sessionCheckIns);
 
-    if (totalAttendees > 0)
-      attendancePCent = (totalAttendances / totalAttendees * 100).toFixed(2);
+      for (const checkIn of sessionCheckIns) {
+        let qAttendee = await attendeeCollection.findOne( {_id: new ObjectId(checkIn.attendee_id)} );
+        if (!isAttendeeInList(attendees, qAttendee))
+          attendees.push(qAttendee);
+      }
+    }
 
-    worksheet.addRow([
-      'Total', 
-      totalAttendees.toString(), 
-      totalAttendances.toString(),
-      attendancePCent.toString()
-    ]);
+    //Rows to print
+    let rows = [['Attendees'], ['']];
+
+    //Total attendance
+    let attendeeTotalAttendanceList = [];
+
+    //Setup rows to print
+    for (const attendee of attendees) {
+      rows.push([attendee.first_name.concat(' ').concat(attendee.last_name)]);
+      attendeeTotalAttendanceList.push(0);
+    }
+    rows.push(['Total Attendees']);
+
+    //Function to find the index in check in list that contains id of attendee
+    const attendeeCheckInIndex = (checkInList, atdee) => {
+      for (let checkInNum = 0; checkInNum < checkInList.length; checkInNum++)
+        if (atdee._id.equals(checkInList[checkInNum].attendee_id)) 
+          return checkInNum;
+      return -1;
+    }
+
+    //Add data for each session
+    for (let sesNum = 0; sesNum < sessions.length; sesNum++) {
+      rows[0].push(sessions[sesNum].session_name);
+      rows[1].push(sessions[sesNum].session_start_time);
+
+      let sessionAttandanceTot = 0;
+
+      //Iterate through all attendees in class and add data
+      for (let atdeeNum = 0; atdeeNum < attendees.length; atdeeNum++) {
+        let checkInIndex = attendeeCheckInIndex(sessionCheckInsArray[sesNum], attendees[atdeeNum])
+        if (checkInIndex != -1) {
+          if (sessionCheckInsArray[sesNum][checkInIndex].attended) {
+            sessionAttandanceTot++;
+            attendeeTotalAttendanceList[atdeeNum]++;
+            rows[atdeeNum + 2].push('Yes');
+          } else {
+            rows[atdeeNum + 2].push('No');
+          }
+        } else {
+          rows[atdeeNum + 2].push('');
+        }
+      }
+
+      rows[attendees.length + 2].push(sessionAttandanceTot);
+    }
+
+    //Calculate attendee and class totals
+    let classTotAttendance = 0;
+    rows[0].push('Total Attendance');
+    rows[1].push('');
+    for (let atdeeNum = 0; atdeeNum < attendeeTotalAttendanceList.length; atdeeNum++) {
+      let attendeeTotalAttendance = attendeeTotalAttendanceList[atdeeNum]
+      rows[atdeeNum + 2].push(attendeeTotalAttendance);
+      classTotAttendance += attendeeTotalAttendance;
+    }
+    rows[attendeeTotalAttendanceList.length + 2].push(classTotAttendance);
+
+    //Add rows
+    for (const row of rows) {
+      worksheet.addRow(row);
+    }
 
     console.log(classRes.class_name);
 
