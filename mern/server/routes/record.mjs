@@ -292,11 +292,12 @@ router.get("/class-attendance-report/:classId/", async (req, res) => {
   }
 });
 
-// This section will help you get a list of all the check-ins with attendee details.
-router.get("/checkin", async (req, res) => {
+// This section will get attendee details for a specific session, with more details
+router.get("/attendees-with-status/:sessionId", async (req, res) => {
   try {
     let collection = await db.collection("Check_in");
     let results = await collection.aggregate([
+      { $match: { session_id: new ObjectId(req.params.sessionId) } },
       {
         $lookup: {
           from: "Attendee",
@@ -312,6 +313,7 @@ router.get("/checkin", async (req, res) => {
         $project: {
           first_name: "$attendeeDetails.first_name",
           last_name: "$attendeeDetails.last_name",
+          email_address: "$attendeeDetails.email_address",
           attended: 1
         }
       }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";  // Import useParams hook
+import { useParams } from "react-router-dom";  
 import './TableUI.css';
 
 
@@ -20,9 +20,10 @@ const TableRow = ({ record, onRowClick, selectedId }) => (
   </tr>
 );
 
+// Function for students check-in page
 export default function SessionAttendees() {
     const [records, setRecords] = useState([]);
-    const [session, setSession] = useState({});  // New state variable for session details
+    const [session, setSession] = useState({});  
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedId, setSelectedId] = useState(null);
     const [notification, setNotification] = useState({ show: false, message: "", type: "" });
@@ -80,13 +81,13 @@ export default function SessionAttendees() {
           return record;
         });
         setRecords(updatedRecords);
-      } else {
+      } 
+      else {
         const message = await response.text();
         showNotification(`Check-in failed: ${message}`, "danger");
-
       }
     }
-
+    // function for search bar functionality
     const filteredRecords = records.filter(record => {
       const fullName = `${record.first_name} ${record.last_name}`.toLowerCase();
       return fullName.includes(searchTerm.toLowerCase());
@@ -94,43 +95,42 @@ export default function SessionAttendees() {
 
     return (
       <div className="container">
-          <Notification type={notification.type} message={notification.message} show={notification.show} />
+        <Notification type={notification.type} message={notification.message} show={notification.show} />
+        <h3>Attendees for Session: {session.session_name}</h3>
 
-          <h3>Attendees for Session: {session.session_name}</h3>
+        <div className="searchBar-container">
+          <input
+            className="searchBar"
+            type="text"
+            placeholder="Search by name"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-          <div className="searchBar-container">
-              <input
-                  className="searchBar"
-                  type="text"
-                  placeholder="Search by name"
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-              />
-          </div>
+        <div className="table-scroll-container">
+          <table className="nameTable">
+            <thead>
+              <th className="tableLabel">Full Name</th>
+            </thead>
+            <tbody>
+              {filteredRecords.map((record) => (
+                <TableRow
+                key={record._id}
+                record={record}                  
+                selectedId={selectedId}  // Pass the selectedId as a prop here
+                onRowClick={() => !record.attended && setSelectedId(record._id)}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-          <div className="table-scroll-container">
-            <table className="nameTable">
-              <thead>
-                  <th className="tableLabel">Full Name</th>
-              </thead>
-              <tbody>
-                {filteredRecords.map((record) => (
-                  <TableRow
-                  key={record._id}
-                  record={record}                  
-                  selectedId={selectedId}  // Pass the selectedId as a prop here
-                  onRowClick={() => !record.attended && setSelectedId(record._id)}
-                 />
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="centered-button">
-            <button onClick={handleCheckIn}>
-              <div className="buttonName">Check In</div>
-            </button>
-          </div>
-      </div>
+        <div className="centered-button">
+          <button onClick={handleCheckIn}>
+            <div className="buttonName">Check In</div>
+          </button>
+        </div>
+    </div>
   );
 }

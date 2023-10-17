@@ -119,6 +119,7 @@ button {
     border: none;
     padding: 15px 25px;
     cursor: pointer;
+    font-size: 20px;
     border-radius: 10px;
     font-family: 'SF FONT bold'; 
 }

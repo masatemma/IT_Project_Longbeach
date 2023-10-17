@@ -1,14 +1,10 @@
 import React from "react";
-import { useLocation, NavLink, useNavigate } from "react-router-dom";
+
 import "bootstrap/dist/css/bootstrap.css";
 import TitleLogo from './TitleLogo';
 
 export default function Navbar() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const goBack = () => {
-    navigate(-1);
-  };
+
 
   return (
     <div>
@@ -20,7 +16,7 @@ export default function Navbar() {
             width="293"
             height="150"
           />
-          <button onClick={goBack} style={{ fontSize: '20px', padding: '10px', marginLeft: '10px' }}>Back</button>
+          
         </div>
       </nav>
     </div>
