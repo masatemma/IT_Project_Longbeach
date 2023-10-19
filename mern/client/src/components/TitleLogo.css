@@ -1,35 +1,30 @@
-.page {
-    margin-left: 25px;
-    margin-right: 25px;
+.titleLogoContainer {
+    display: flex;
+    align-items: center; /* This will vertically align the logo and title */
 }
 
 .logo {
-    background-color: rgba(255, 255, 255, 0);
-    text-align: auto;
-    position: absolute; 
-    top: 0px;   
-    left: 40px; 
+    display: flex;
+    align-items: center;
+    margin-right: 20px; /* Adds some space between the logo and the title */
 }
 
-/* 缩小logo图像 */
 .logo img {
-    max-width: 100%; /* 图像宽度最大不超过容器宽度 */
-    max-height: 100px; /* 图像高度最大不超过100像素 */
+    max-width: 100%; 
+    max-height: 100px; 
 }
 
 .title {
-    background-color: rgba(255, 255, 255, 0);
     font-family: 'SF FONT bold', Arial, sans-serif;
-    /* color: #D89D5B; */
     color: #3b9da6;
-
     padding: 20px;
     font-size: 46px;
-    position: absolute; 
-    top: 13px;   
-    left: 160px;          
-    
 }
+
+
+/* You can keep your media queries but make sure to update them with the changes made above. */
+/* For example, remove any 'top' or 'left' properties and update as needed. */
+
 @media screen and (max-width: 950px) {
     .page {
         margin-left: 5px;
@@ -96,4 +91,5 @@
         top: 0px;
         left: 50px;
     }
+    
 }
