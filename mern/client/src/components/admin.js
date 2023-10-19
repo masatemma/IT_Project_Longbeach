@@ -243,12 +243,12 @@ export function Attendees() {
   };
 
   return (
-    <div className="container" style={{ alignItems: 'flex-start' }}>
-      <Notification type={notification.type} message={notification.message} show={notification.show} />
-
-      <button onClick={goBack} >
+    <div className="container">
+      
+      <button className="back-to-session-button" onClick={goBack}>
         Back to Sessions
       </button>
+      <Notification type={notification.type} message={notification.message} show={notification.show} />
       
       <h3>Attendees for Session: {session.session_name}</h3>
 
@@ -275,7 +275,7 @@ export function Attendees() {
               key={record._id}
               record={record}                  
               selectedId={selectedId}  // Pass the selectedId as a prop here
-              onRowClick={() => !record.attended && setSelectedId(record._id)}                
+              onRowClick={() => setSelectedId(record._id)}                
               />
             ))}
           </tbody>

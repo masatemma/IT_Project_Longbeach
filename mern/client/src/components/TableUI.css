@@ -23,9 +23,13 @@ body {
 
 /* --- HEADINGS --- */
 h3 {
-    text-align: center;
-    margin-top: 20px;
+    text-align: center;      
+    margin-top: 30px;
     font-family: 'SF FONT bold'; 
+}
+
+.centered-title {
+    text-align: center;          /* Horizontal centering */   
 }
 
 /* --- SEARCH BAR --- */
@@ -43,28 +47,27 @@ h3 {
     font-family: 'SF FONT medium';
 }
 
+
+
 /* --- TABLE STYLES --- */
+
 .nameTable {
     width: 80%;
     border-collapse: collapse;
     margin: 20px auto;
     background-color: #E5FBE7;    
-    border-radius: 5px;
+    border-radius: 10px;
     font-family: 'SF FONT medium';     
-    border: 1px solid #ddd;
+    
 }
 
 .nameTable th, .nameTable td {
-    border-right: 1px solid #ddd;
+    border-right: 1px solid #ddd; 
     padding: 8px 16px; 
 }
 
 .nameTable th:last-child, .nameTable td:last-child {
     border-right: none;
-}
-
-.nameTable tr {
-    border-bottom: 1px solid #ddd;
 }
 
 .nameTable tr:last-child {
@@ -108,12 +111,6 @@ table tbody tr {
 }
 
 /* --- BUTTON STYLES --- */
-.centered-button {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
 button {
     background-color: #ECC182;
     border: none;
@@ -121,8 +118,18 @@ button {
     cursor: pointer;
     font-size: 20px;
     border-radius: 10px;
-    font-family: 'SF FONT bold'; 
+    font-family: 'SF FONT bold';     
 }
+
+.centered-button {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.back-to-session-button {
+    align-self: flex-start;     
+}
+
 
 button:hover {
     background-color: #e9b464;

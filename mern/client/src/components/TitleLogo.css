@@ -6,7 +6,7 @@
 .logo {
     display: flex;
     align-items: center;
-    margin-right: 20px; /* Adds some space between the logo and the title */
+    margin-right: 15px; /* Adds some space between the logo and the title */
 }
 
 .logo img {
