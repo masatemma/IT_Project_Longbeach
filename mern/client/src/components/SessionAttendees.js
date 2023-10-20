@@ -96,7 +96,7 @@ export default function SessionAttendees() {
     return (
       <div className="container">
         <Notification type={notification.type} message={notification.message} show={notification.show} />
-        <h3>Attendees for Session: {session.session_name}</h3>
+        <h3 className="student-session-title">Attendees for Session: {session.session_name}</h3>
 
         <div className="searchBar-container">
           <input

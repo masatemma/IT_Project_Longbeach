@@ -1,5 +1,5 @@
 import React from 'react';
-import './TitleLogo.css';
+import './AttendanceSysTitleLogo.css';
 import Logo from '../image/logo_new.png';
 
 function TitleLogo() {

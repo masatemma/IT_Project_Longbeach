@@ -250,7 +250,7 @@ export function Attendees() {
       </button>
       <Notification type={notification.type} message={notification.message} show={notification.show} />
       
-      <h3>Attendees for Session: {session.session_name}</h3>
+      <h3 className="admin-session-title">Attendees for Session: {session.session_name}</h3>
 
       <div className="searchBar-container">
         <input

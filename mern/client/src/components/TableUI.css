@@ -24,10 +24,16 @@ body {
 /* --- HEADINGS --- */
 h3 {
     text-align: center;      
-    margin-top: 30px;
+    
     font-family: 'SF FONT bold'; 
 }
 
+.admin-session-title{
+    margin-top: 5px;
+}
+.student-session-title{
+    margin-top: 30px;
+}
 .centered-title {
     text-align: center;          /* Horizontal centering */   
 }
